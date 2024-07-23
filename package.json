@@ -1,0 +1,20 @@
+{
+  "name": "salvatore-backend-mongodb-implementa-o",
+  "version": "1.0.0",
+  "description": "Projeto da Missão de Aprendizado da Profissão Dev BackEnd JavaScript, Nivel Iniciante: MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
