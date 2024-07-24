@@ -113,12 +113,12 @@ async function main() {
     })
 
     // Endpoint Delete [DELETE] /personagem/:id
-    app.delete('/personagem/:id', function (req, res) {
+    app.delete('/personagem/:id', async function (req, res) {
         // Acessando o parametro de rota
         const id = req.params.id
 
-        // Removendo o item da lista usando o ID - 1
-        delete lista[id - 1]
+        // Removendo o item da collection usando o ID
+        await collection.deleteOne({ _id: new ObjectId(id)})
 
         // Enviando um Messagem de sucesso
         res.send('Item removido com sucesso: ' + id)
