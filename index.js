@@ -59,28 +59,25 @@ async function main() {
     app.use(express.json())
 
     // Endpoint Create (POST) /personagem
-    app.post('/personagem', function (req, res) {
+    app.post('/personagem', async function (req, res) {
         //Acessando o Body da Requisição
-        const body = req.body
-
-        //Acessando a propriedade 'nome' do body
-        const novoItem = body.nome
+        const novoItem = req.body
 
         //Checa se o nome esta presente no Body
-        if (!novoItem) {
+        if (!novoItem || !novoItem.nome) {
             return res.status(400).send('Corpo da requisição deve conter a propriedade nome. ')
         }
 
         //Checa se o novo item esta na lista
-        if (lista.includes(novoItem)) {
-            return res.status(409).send('Esse item já eciste na lista.')
-        }
+        // if (lista.includes(novoItem)) {
+        //    return res.status(409).send('Esse item já eciste na lista.')
+        //}
 
-        //Adicionando na lista
-        lista.push(novoItem)
+        //Adicionando na collection
+        await collection.insertOne(novoItem)
 
         //Exibindo uma mensagem de sucesso
-        res.status(201).send('Item adicionado com sucesso!' + novoItem)
+        res.status(201).send(novoItem)
     })
 
     // Endpoint Update [PUT] /personagem/id:
