@@ -25,8 +25,12 @@ async function main() {
     const lista = ['Java', 'Kotlin', 'Android']
 
     // Endpoint Real All [GET] /personagem
-    app.get('/personagem', function (req, res) {
-        res.send(lista.filter(Boolean))
+    app.get('/personagem',async function (req, res) {
+        // Acessando a lista de itens na collection do MongoDB
+        const itens = await collection.find().toArray()
+
+        // Enviando a lista de itens como resultado
+        res.send(itens)
     })
 
     // Endpoint Ready By ID [GET] /personagem/:id
