@@ -1,109 +1,130 @@
 const express = require("express")
-const app = express()
+const { MongoClient } = require("mongodb")
 
-app.get("/", function (req, res) {
-    res.send("Hello World!!")
-})
+// Preparamos as informacoes de acesso ao BD
+const dbUrl = 'mongodb+srv://admin:wRTE85269-FDFas@cluster0.7oarkrl.mongodb.net/'
+const dbName = 'mongodb-intro-implementacao'
 
-const lista = ['Java', 'Kotlin', 'Android']
+// Declaramos a função main()
+async function main() {
+    // Realizamos a conexao ao BD
+    const client = new MongoClient(dbUrl)
+    console.log('Conectando ao banco de dados...')
+    await client.connect()
+    console.log('Banco de dados conectado com sucesso!')
 
-// Endpoint Real All [GET] /personagem
-app.get('/personagem', function (req, res){
-    res.send(lista.filter(Boolean))
-})
+    const db = client.db(dbName)
+    const collection = db.collection('personagem')
 
-// Endpoint Ready By ID [GET] /personagem/:id
-app.get('/personagem/:id', function(req, res) {
-    // Acessar o parametro ID
-    const id = req.params.id
+    const app = express()
 
-    // Acessar o item na lista usando o ID - 1
-    const item = lista[id - 1]
+    app.get("/", function (req, res) {
+        res.send("Hello World!!")
+    })
 
-    // Checando se o item foi encontrado
-    if (!item){
-        return res.status(404).send('Item não encontrado.')
-    }
+    const lista = ['Java', 'Kotlin', 'Android']
 
-    // Enviando o item com resposta
-    res.send(item)
-})
+    // Endpoint Real All [GET] /personagem
+    app.get('/personagem', function (req, res) {
+        res.send(lista.filter(Boolean))
+    })
 
-app.get('/personagem/count', function (req, res) {
-    const totalItens = lista.length
-    res.send('Numero total de itens: ${totalItens}' )
-})
+    // Endpoint Ready By ID [GET] /personagem/:id
+    app.get('/personagem/:id', function (req, res) {
+        // Acessar o parametro ID
+        const id = req.params.id
 
-// Sinalizando para o express que utilizaremos JSON no Body
-app.use(express.json())
+        // Acessar o item na lista usando o ID - 1
+        const item = lista[id - 1]
 
-// Endpoint Create (POST) /personagem
-app.post('/personagem', function (req , res) {
-    //Acessando o Body da Requisição
-    const body = req.body
+        // Checando se o item foi encontrado
+        if (!item) {
+            return res.status(404).send('Item não encontrado.')
+        }
 
-    //Acessando a propriedade 'nome' do body
-    const novoItem = body.nome
+        // Enviando o item com resposta
+        res.send(item)
+    })
 
-    //Checa se o nome esta presente no Body
-    if (!novoItem){
-        return res.status(400).send('Corpo da requisição deve conter a propriedade nome. ')
-    }
+    app.get('/personagem/count', function (req, res) {
+        const totalItens = lista.length
+        res.send('Numero total de itens: ${totalItens}')
+    })
 
-    //Checa se o novo item esta na lista
-    if (lista.includes(novoItem)){
-        return res.status(409).send('Esse item já eciste na lista.')
-    }
+    // Sinalizando para o express que utilizaremos JSON no Body
+    app.use(express.json())
 
-    //Adicionando na lista
-    lista.push(novoItem)
+    // Endpoint Create (POST) /personagem
+    app.post('/personagem', function (req, res) {
+        //Acessando o Body da Requisição
+        const body = req.body
 
-    //Exibindo uma mensagem de sucesso
-    res.status(201).send('Item adicionado com sucesso!' + novoItem)
-})
+        //Acessando a propriedade 'nome' do body
+        const novoItem = body.nome
 
-// Endpoint Update [PUT] /personagem/id:
-app.put('/personagem/:id', function (req, res) {
-    const id = req.params.id
+        //Checa se o nome esta presente no Body
+        if (!novoItem) {
+            return res.status(400).send('Corpo da requisição deve conter a propriedade nome. ')
+        }
 
-    // Checando se o item existe na lista
-    if (!lists[id - 1]){
-        return res.status(404).send('Item não encontrado.')
-    }
+        //Checa se o novo item esta na lista
+        if (lista.includes(novoItem)) {
+            return res.status(409).send('Esse item já eciste na lista.')
+        }
 
-    // Acessando o Body da requisição
-    const body = req.body
+        //Adicionando na lista
+        lista.push(novoItem)
 
-    // Acessando a propriedade 'nome' do body
-    const novoItem = body.nome
+        //Exibindo uma mensagem de sucesso
+        res.status(201).send('Item adicionado com sucesso!' + novoItem)
+    })
 
-    //Checa se o nome esta presente no Body
-    if (!novoItem){
-        return res.status(400).send('Corpo da requisição deve conter a propriedade nome. ')
-    }
+    // Endpoint Update [PUT] /personagem/id:
+    app.put('/personagem/:id', function (req, res) {
+        const id = req.params.id
 
-    //Checa se o novo item esta na lista
-    if (lista.includes(novoItem)){
-        return res.status(409).send('Esse item já eciste na lista.')
-    }
+        // Checando se o item existe na lista
+        if (!lists[id - 1]) {
+            return res.status(404).send('Item não encontrado.')
+        }
 
-    // Atualizando a lista com o novoItem peli ID -1
-    lista[id - 1] = novoItem
+        // Acessando o Body da requisição
+        const body = req.body
 
-    // Enviando uma msg de Sucesso
-    res.send('Item Atualizado com Sucesso: ' + id + ' - ' + novoItem )
-})
+        // Acessando a propriedade 'nome' do body
+        const novoItem = body.nome
 
-// Endpoint Delete [DELETE] /personagem/:id
-app.delete('/personagem/:id', function(req, res) {
-    // Acessando o parametro de rota
-    const id = req.params.id
+        //Checa se o nome esta presente no Body
+        if (!novoItem) {
+            return res.status(400).send('Corpo da requisição deve conter a propriedade nome. ')
+        }
 
-    // Removendo o item da lista usando o ID - 1
-    delete lista[id - 1]
+        //Checa se o novo item esta na lista
+        if (lista.includes(novoItem)) {
+            return res.status(409).send('Esse item já eciste na lista.')
+        }
 
-    // Enviando um Messagem de sucesso
-    res.send('Item removido com sucesso: ' + id)
-})
+        // Atualizando a lista com o novoItem peli ID -1
+        lista[id - 1] = novoItem
 
-app.listen(3000)
+        // Enviando uma msg de Sucesso
+        res.send('Item Atualizado com Sucesso: ' + id + ' - ' + novoItem)
+    })
+
+    // Endpoint Delete [DELETE] /personagem/:id
+    app.delete('/personagem/:id', function (req, res) {
+        // Acessando o parametro de rota
+        const id = req.params.id
+
+        // Removendo o item da lista usando o ID - 1
+        delete lista[id - 1]
+
+        // Enviando um Messagem de sucesso
+        res.send('Item removido com sucesso: ' + id)
+    })
+
+    app.listen(3000)
+}
+// Fechamos a função main()
+
+main()
