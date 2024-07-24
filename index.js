@@ -1,5 +1,5 @@
 const express = require("express")
-const { MongoClient } = require("mongodb")
+const { MongoClient, ObjectId } = require("mongodb")
 
 // Preparamos as informacoes de acesso ao BD
 const dbUrl = 'mongodb+srv://admin:wRTE85269-FDFas@cluster0.7oarkrl.mongodb.net/'
@@ -34,12 +34,12 @@ async function main() {
     })
 
     // Endpoint Ready By ID [GET] /personagem/:id
-    app.get('/personagem/:id', function (req, res) {
+    app.get('/personagem/:id', async function (req, res) {
         // Acessar o parametro ID
         const id = req.params.id
 
-        // Acessar o item na lista usando o ID - 1
-        const item = lista[id - 1]
+        // Acessar o item na collection usando ID
+        const item = await collection.findOne({ _id: new ObjectId(id)})
 
         // Checando se o item foi encontrado
         if (!item) {
